@@ -1,0 +1,108 @@
+#!/usr/bin/env zsh
+# Record: termtosvg -g 128x28 -c demo -t $HOME/Documents/src/git/github.com/nbedos/termtosvg/termtosvg/data/templates/dracula.svg img/intro.svg
+# ![Intro](./img/intro.svg)
+set -o nounset
+set -o errexit
+set -o pipefail
+
+clear=true
+if [ "${DEBUG:-0}" -eq 1 ]; then
+  set -o xtrace
+  clear=false
+fi
+
+function pecho() {
+  local msg="$1"
+  local font="${2:-"future"}"
+  toilet --metal --directory "${HOME}/Documents/src/git/github.com/xero/figlet-fonts" --font "$font" "$msg" | lolcat --animate --duration 1 --truecolor --clearsky
+}
+
+fonts=(future)
+duration="1"
+duration_after="4"
+
+function typer() {
+  echo $@ | pv -qL 8
+}
+
+function run() {
+  local title="$1"
+  local description="$2"
+  shift 2
+
+  local font="${fonts[1]}"
+
+  pecho "$title" "$font" 
+  if [ -n "$description" ]; then
+    echo "$description"
+  fi
+  echo                          
+  sleep "$duration"
+  echo -n "$ "
+  sleep 0.5
+  typer ${@}
+  sleep 0.5
+  $@
+  sleep "$duration_after"
+  if $clear; then
+    clear
+  fi
+}
+
+function logo() {
+  local padding="${1:-0}"
+  local heading="${2:-0}"
+
+  local reset="\e[0m"
+  local red="\e[91m"
+  local lgrey="\e[37m"
+
+  padding="$(printf "%0.s " {1..${padding}})"
+
+  clear
+  printf "%0.s\n" {1..${heading}}
+  echo -e "${padding}${red}   ___        ${reset}
+${padding}${red}      \      ${reset}
+${padding}${lgrey}       o   ${reset}
+${padding}${red}   ___/\\\\\ ${reset}
+${padding}${red}       (${lgrey}O${red}) ${reset}
+${padding}${red}       //    ${reset}
+${padding}${red}   ___//__   ${reset}
+${padding}${red}  (_______)  ${reset}
+
+${padding}    Prod
+"
+  sleep 2
+}
+
+function intro() {
+  clear
+  pecho "        Prod"
+  echo
+  pecho "* Simple configuration"
+  echo
+  pecho "* One CLI"
+  echo
+  pecho "* Runner agnostic"
+  echo
+  pecho "* Composable"
+  sleep 4
+}
+
+function demo() {
+  clear
+  run "List workstations" "" prod --cmd list
+  run "Graph production line" "(use \"dot -Tpng -o graph.png\" to convert into a picture)" prod --cmd graph
+
+  source venv/bin/activate
+  run "Build locally" "" prod
+  deactivate 
+
+  run "Build in Docker" "" prod --conveyor docker
+  run "Generate .gitlab-ci.yml" "" prod --conveyor gitlab --cmd generate
+  run "Build in Gitlab" "" prod --conveyor gitlab
+}
+
+logo 34 7
+intro
+demo

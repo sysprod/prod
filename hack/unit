@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+set -o nounset
+set -o errexit
+
+. "$VIRTUAL_ENV"/bin/activate
+python -m unittest

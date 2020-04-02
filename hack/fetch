@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+set -o nounset
+set -o errexit
+
+python -m venv "$VIRTUAL_ENV"
+. "$VIRTUAL_ENV"/bin/activate
+
+python -m pip install --requirement requirements.txt

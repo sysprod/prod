@@ -1,0 +1,120 @@
+default:
+  workstation:
+    container:
+      image: "python:3"
+      variables:
+        PIP_CACHE_DIR: ${conveyor.PRODCACHE}/pip
+        VIRTUAL_ENV: ${conveyor.PRODCACHE}/venv
+        PYTHON_DIST: ${conveyor.PRODCACHE}/dist
+      volumes:
+        - "${env.HOME}/.cache/pip:${var.PIP_CACHE_DIR}"
+
+# Functions
+workstations:
+  fetch:
+    description: "Download dependencies"
+    inputs:
+      files:
+        - requirements.txt
+      variables:
+        A: 1
+    outputs:
+      files:
+        - ${var.VIRTUAL_ENV}
+    container:
+      volumes:
+        - "${var.VIRTUAL_ENV}"
+
+  unit:
+    description: "Run unit tests"
+    inputs:
+      files:
+        - ${var.VIRTUAL_ENV}
+
+  lint:
+    description: "Lint the source code"
+    inputs:
+      files:
+        - ${var.VIRTUAL_ENV}
+
+  package:
+    description: "Package the project"
+    outputs:
+      files:
+        - ${var.PYTHON_DIST}/python-flask-hello-0.0.1.tar.gz
+        - ${var.PYTHON_DIST}/python_flask_hello-0.0.1-py3-none-any.whl
+
+  deploy:
+    description: "Deploy the project"
+    inputs:
+      files:
+        - ${var.PYTHON_DIST}/python-flask-hello-0.0.1.tar.gz
+        - ${var.PYTHON_DIST}/python_flask_hello-0.0.1-py3-none-any.whl
+
+  integration:
+    description: "Run the integration test"
+
+  release:
+    description: "Release the project"
+
+  destroy:
+    description: "Destroy the project if deployed"
+
+# Use the function in a program
+production_lines:
+  production:
+    - from:
+        - fetch
+      to:
+        - unit
+        - lint
+
+    - from:
+        - unit
+        - lint
+      to:
+        - package
+
+    - from:
+        - package
+      to:
+        - deploy
+
+    - from:
+        - deploy
+      to:
+        - integration
+
+    - from:
+        - integration
+      to:
+        - release
+
+  default:
+    - from:
+        - fetch
+      to:
+        - unit
+        - lint
+
+    - from:
+        - unit
+        - lint
+      to:
+        - package
+
+    - from:
+        - package
+      to:
+        - deploy
+
+    - from:
+        - deploy
+      to:
+        - integration
+
+    - from:
+        - integration
+      to:
+        - destroy
+
