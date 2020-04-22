@@ -12,7 +12,7 @@
 <p><img width="800" src="/img/demo.gif?raw=true"/><br></p>
 </div>
 
-**Prod** is a tool for consistently delivering your project by yourself from development to production as fast as possible from dependencies fetching to releasing.  It is a fast, CI/CD agnostic, composable and consistent tool that improves the edit-compile cycle time of developers from dependencies fetching to releasing.
+**Prod** is a cross-platform tool for consistently delivering your project by yourself from development to production as fast as possible from dependencies fetching to releasing.  It is a fast, CI/CD agnostic, composable and consistent tool that improves the edit-compile cycle time of developers from dependencies fetching to releasing.
 
 The key features of Prod are:
 - **Consistent**: Run in containers, like linux containers, virtual machines or locally
@@ -23,7 +23,7 @@ The key features of Prod are:
 ## :gear: Concept
 To keep it simple and visual, Prod models the delivery process as a [production line](https://en.wikipedia.org/wiki/Production_line):
 
-- workstation: an executable focusing on a specialized task (e.g. compile, unit test or deploy) along with its configuration describing its inputs, outputs and container
+- workstation: an executable focusing on a specialized task (e.g. compile, unit test or deploy) along with its configuration describing its inputs, outputs and container; implemented in the programming language that you feel comfortable
 - production line: orchestrate the order workstations are launched
 - conveyor: launch and pass inputs and outputs (files/variables) between workstations
 - bot (coming soon): pre-automated task that workstations can trigger
